@@ -1,5 +1,10 @@
 import { useState } from 'react';
 import {
+  BrowserRouter as Router,
+  Switch as RouterSwitch, Route, Link as RouterLink
+} from "react-router-dom"
+
+import {
   Switch, Badge, Container, IconButton, Stack, Collapse,
   Avatar, Typography, Box, Drawer, Divider, List, ListItemButton,
   ListItemText, ListItem, ListItemAvatar, ListItemIcon, AppBar, Toolbar, Menu,
@@ -8,7 +13,7 @@ import {
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import {
-  Assessment, PieChart, ShoppingBag, Person, Group,Close,
+  Assessment, PieChart, ShoppingBag, Person, Group, Close,
   ExpandLess, ExpandMore, Settings, Notifications, Payment, Textsms, ShoppingCart
 } from '@material-ui/icons';
 
@@ -55,13 +60,13 @@ export default function Dashboard() {
 
 
   // drawer logic 
-  const [openDrwr , setOpenDrwr] = useState(false);
+  const [openDrwr, setOpenDrwr] = useState(false);
 
-  const HandleDrawerOpen = (event)=>{
+  const HandleDrawerOpen = (event) => {
     setOpenDrwr(!openDrwr);
-  } 
+  }
 
-  const HandleDrawerClose = (event)=>{
+  const HandleDrawerClose = (event) => {
     setOpenDrwr(false);
   }
 
@@ -79,8 +84,15 @@ export default function Dashboard() {
     }
   };
 
+  // Router Link Style Disable
 
-// appBar menus logic
+  const LinkStyle = {
+    textDecoration: 'none',
+    color: theme.currentTheme.palette.text.primary
+  }
+
+
+  // appBar menus logic
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -111,14 +123,14 @@ export default function Dashboard() {
 
 
   return (
-    <>
+    <Router>
       <ThemeProvider theme={theme.currentTheme}>
         <AppBar position="fixed" color="primary" sx={{ zIndex: theme.currentTheme.zIndex.drawer + 1 }} elevation={0}>
           <Toolbar>
             <Box sx={{ flexGrow: 1 }} >
               {openDrwr ?
-                 <Close cursor="pointer" onClick={HandleDrawerOpen} fontSize="medium" />
-                :<MenuIcon cursor="pointer" onClick={HandleDrawerOpen} fontSize="medium" />}
+                <Close cursor="pointer" onClick={HandleDrawerOpen} fontSize="medium" />
+                : <MenuIcon cursor="pointer" onClick={HandleDrawerOpen} fontSize="medium" />}
             </Box>
 
             {/* switch theme */}
@@ -260,7 +272,7 @@ export default function Dashboard() {
         </AppBar>
 
 
-        <Drawer open={openDrwr} onClose={HandleDrawerClose}  sx={DrawerStyle}>
+        <Drawer open={openDrwr} onClose={HandleDrawerClose} sx={DrawerStyle}>
           {/* this box is used to fix drawer hidden content bellow appbar */}
           <Box sx={{ ...theme.currentTheme.mixins.toolbar }} />
 
@@ -285,7 +297,8 @@ export default function Dashboard() {
           <Stack justifyContent="center" alignItems="left" spacing={1}>
             <List>
               <Typography variant="h2" sx={{ fontSize: '0.9rem', fontWeight: '500', ml: 2 }}>GENERAL</Typography>
-              <ListItem disablePadding>
+
+              <ListItem component={RouterLink} to="/dashboard" sx={LinkStyle} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
                     <Assessment />
@@ -294,7 +307,7 @@ export default function Dashboard() {
                 </ListItemButton>
               </ListItem>
 
-              <ListItem disablePadding>
+              <ListItem component={RouterLink} to="/dashboard/analytics" sx={LinkStyle}  disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
                     <PieChart />
@@ -303,7 +316,7 @@ export default function Dashboard() {
                 </ListItemButton>
               </ListItem>
 
-              <ListItem disablePadding>
+              <ListItem component={RouterLink} to="/dashboard/finance" sx={LinkStyle}  disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
                     <ShoppingBag />
@@ -312,7 +325,7 @@ export default function Dashboard() {
                 </ListItemButton>
               </ListItem>
 
-              <ListItem disablePadding>
+              <ListItem component={RouterLink} to="/dashboard/account" sx={LinkStyle}  disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
                     <Person />
@@ -335,15 +348,15 @@ export default function Dashboard() {
               <Collapse in={openMgmt} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
 
-                  <ListItemButton sx={{ pl: 10 }}>
+                  <ListItemButton  component={RouterLink} to="/dashboard/customers/list"  sx={{ ...LinkStyle, pl: 10 }}>
                     <ListItemText primary="List" />
                   </ListItemButton>
 
-                  <ListItemButton sx={{ pl: 10 }}>
+                  <ListItemButton component={RouterLink} to="/dashboard/customers/details"  sx={{ ...LinkStyle, pl: 10 }}>
                     <ListItemText primary="Details" />
                   </ListItemButton>
 
-                  <ListItemButton sx={{ pl: 10 }}>
+                  <ListItemButton component={RouterLink} to="/dashboard/customers/edit"  sx={{ ...LinkStyle, pl: 10 }}>
                     <ListItemText primary="Edit" />
                   </ListItemButton>
 
@@ -363,15 +376,15 @@ export default function Dashboard() {
               <Collapse in={openPrdct} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
 
-                  <ListItemButton sx={{ pl: 10 }}>
+                  <ListItemButton component={RouterLink} to="/dashboard/product/list"  sx={{ ...LinkStyle, pl: 10 }}>
                     <ListItemText primary="List" />
                   </ListItemButton>
 
-                  <ListItemButton sx={{ pl: 10 }}>
+                  <ListItemButton component={RouterLink} to="/dashboard/product/details"  sx={{ ...LinkStyle, pl: 10 }}>
                     <ListItemText primary="Details" />
                   </ListItemButton>
 
-                  <ListItemButton sx={{ pl: 10 }}>
+                  <ListItemButton component={RouterLink} to="/dashboard/product/create"  sx={{ ...LinkStyle, pl: 10 }}>
                     <ListItemText primary="Create" />
                   </ListItemButton>
 
@@ -385,7 +398,14 @@ export default function Dashboard() {
 
 
         </Drawer>
+        {/* added that box to push content below AppBar 'by default it will be under it (hidden)' */}
+        <Box sx={{ ...theme.currentTheme.mixins.toolbar }} />
+        {/* routerSwitch is nothing then a switch case which will return components Conditionaaly based on the requested path */}
+        {/* will integrate protected routes too to avoid accessing /dashboard/xxxxx  */}
+        <RouterSwitch>
+            <Route path="/dashboard/analytics">hello from analytics</Route> 
+        </RouterSwitch>
       </ThemeProvider>
-    </>
+    </Router>
   )
 }
