@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Switch, Badge, Container, IconButton, Stack,
+  Switch, Badge, Container, IconButton, Stack, Collapse,
   Avatar, Typography, Box, Drawer, Divider, List, ListItemButton,
   ListItemText, ListItem, ListItemAvatar, ListItemIcon, AppBar, Toolbar, Menu,
   MenuItem, Button
@@ -10,30 +10,16 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import InboxIcon from '@material-ui/icons/Inbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Person, Settings, Notifications, Payment, Textsms, ShoppingCart } from '@material-ui/icons';
+import {
+  Assessment, PieChart, ShoppingBag, Person, Group,Close,
+  ExpandLess, ExpandMore, Settings, Notifications, Payment, Textsms, ShoppingCart
+} from '@material-ui/icons';
 
 const DrawerStyle = {
   width: '240px',
   '& 	.MuiDrawer-paper': { width: '240px', boxSizing: 'border-box' }
 };
 
-// here our theme is retuning undefined
-// const useStyles = makeStyles((theme) => ({
-//   root : {
-//     background: theme.background
-//   },
-//   appBar : {
-//     zIndex: theme.zInndex.drawer+1
-//   },
-// }));
-
-const StyledDiv = styled('div')(({ theme }) => ({
-  ...theme.mixins.toolbar
-}));
-
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-}));
 
 // themes
 
@@ -56,7 +42,33 @@ const lightTheme = createTheme({ ...themeCorps, palette: { mode: "light" } });
 
 
 export default function Dashboard() {
+  // cllapsable menus (we groupe them with checks later)
 
+  const [openMgmt, setOpenMgmt] = useState(false);
+
+  const handleMgmtClick = () => {
+    setOpenMgmt(!openMgmt);
+  };
+
+  const [openPrdct, setOpenPrdct] = useState(false);
+
+  const handlePrdctClick = () => {
+    setOpenPrdct(!openPrdct);
+  };
+
+
+  // drawer logic 
+  const [openDrwr , setOpenDrwr] = useState(false);
+
+  const HandleDrawerOpen = (event)=>{
+    setOpenDrwr(!openDrwr);
+  } 
+
+  const HandleDrawerClose = (event)=>{
+    setOpenDrwr(false);
+  }
+
+  // theme logic
   const [theme, setTheme] = useState({
     mode: 'light',
     currentTheme: lightTheme
@@ -106,7 +118,9 @@ export default function Dashboard() {
         <AppBar position="fixed" color="primary" sx={{ zIndex: theme.currentTheme.zIndex.drawer + 1 }} elevation={0}>
           <Toolbar>
             <Box sx={{ flexGrow: 1 }} >
-              <MenuIcon cursor="pointer" fontSize="medium" />
+              {openDrwr ?
+                 <Close cursor="pointer" onClick={HandleDrawerOpen} fontSize="medium" />
+                :<MenuIcon cursor="pointer" onClick={HandleDrawerOpen} fontSize="medium" />}
             </Box>
 
             {/* switch theme */}
@@ -248,7 +262,7 @@ export default function Dashboard() {
         </AppBar>
 
 
-        <Drawer variant="permanent" sx={DrawerStyle}>
+        <Drawer open={openDrwr} onClose={HandleDrawerClose}  sx={DrawerStyle}>
           {/* this box is used to fix drawer hidden content bellow appbar */}
           <Box sx={{ ...theme.currentTheme.mixins.toolbar }} />
 
@@ -270,30 +284,104 @@ export default function Dashboard() {
 
           <Divider />
           {/* used stack here to avoid using multiple elements with margins for separation */}
-          <Stack justifyContent="center" alignItems="left" sx={{ml:2}} spacing={1}>
+          <Stack justifyContent="center" alignItems="left" spacing={1}>
             <List>
-              <Typography variant="h2" sx={{ fontSize: '1rem', fontWeight: '500' }}>General</Typography>
+              <Typography variant="h2" sx={{ fontSize: '0.9rem', fontWeight: '500', ml: 2 }}>GENERAL</Typography>
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <InboxIcon />
+                    <Assessment />
                   </ListItemIcon>
-                  <ListItemText primary="Inbox" />
+                  <ListItemText primary="Overview" />
                 </ListItemButton>
               </ListItem>
+
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <DraftsIcon />
+                    <PieChart />
                   </ListItemIcon>
-                  <ListItemText primary="Drafts" />
+                  <ListItemText primary="Analytics" />
+                </ListItemButton>
+              </ListItem>
+
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <ShoppingBag />
+                  </ListItemIcon>
+                  <ListItemText primary="Finance" />
+                </ListItemButton>
+              </ListItem>
+
+              <ListItem disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <Person />
+                  </ListItemIcon>
+                  <ListItemText primary="Account" />
                 </ListItemButton>
               </ListItem>
             </List>
+            {/* menu with nested collapsable menu */}
+            <List>
+              <Typography variant="h2" sx={{ fontSize: '0.9rem', fontWeight: '500', marginLeft: 2 }}>MANAGEMENT</Typography>
+              <ListItemButton onClick={handleMgmtClick}>
+                <ListItemIcon>
+                  <Group />
+                </ListItemIcon>
+                <ListItemText primary="Cutomers" />
+                {openMgmt ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
 
-            <Typography variant="h2">
-              hello world
-            </Typography>
+              <Collapse in={openMgmt} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+
+                  <ListItemButton sx={{ pl: 10 }}>
+                    <ListItemText primary="List" />
+                  </ListItemButton>
+
+                  <ListItemButton sx={{ pl: 10 }}>
+                    <ListItemText primary="Details" />
+                  </ListItemButton>
+
+                  <ListItemButton sx={{ pl: 10 }}>
+                    <ListItemText primary="Edit" />
+                  </ListItemButton>
+
+                </List>
+              </Collapse>
+
+              {/* second colapsable option  */}
+
+              <ListItemButton onClick={handlePrdctClick}>
+                <ListItemIcon>
+                  <ShoppingCart />
+                </ListItemIcon>
+                <ListItemText primary="Products" />
+                {openPrdct ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+
+              <Collapse in={openPrdct} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+
+                  <ListItemButton sx={{ pl: 10 }}>
+                    <ListItemText primary="List" />
+                  </ListItemButton>
+
+                  <ListItemButton sx={{ pl: 10 }}>
+                    <ListItemText primary="Details" />
+                  </ListItemButton>
+
+                  <ListItemButton sx={{ pl: 10 }}>
+                    <ListItemText primary="Create" />
+                  </ListItemButton>
+
+                </List>
+              </Collapse>
+
+
+            </List>
           </Stack>
 
 
