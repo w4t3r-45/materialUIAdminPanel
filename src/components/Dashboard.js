@@ -5,10 +5,7 @@ import {
   ListItemText, ListItem, ListItemAvatar, ListItemIcon, AppBar, Toolbar, Menu,
   MenuItem, Button
 } from '@material-ui/core';
-import { styled } from '@material-ui/core';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
 import MenuIcon from '@material-ui/icons/Menu';
 import {
   Assessment, PieChart, ShoppingBag, Person, Group,Close,
@@ -83,6 +80,7 @@ export default function Dashboard() {
   };
 
 
+// appBar menus logic
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
